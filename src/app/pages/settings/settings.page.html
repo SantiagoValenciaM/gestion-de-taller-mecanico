@@ -1,0 +1,71 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Configuración</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="page-shell">
+    <div class="header">
+      <div>
+        <p class="eyebrow">Configuración</p>
+        <h1>Parámetros del taller</h1>
+        <p class="muted">Precios, impuestos, descuentos y personalización de notas de venta.</p>
+      </div>
+      <ion-button color="primary" (click)="save()">
+        <ion-icon slot="start" name="save-outline"></ion-icon>
+        Guardar
+      </ion-button>
+    </div>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col sizeLg="6" size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Identidad</ion-card-subtitle>
+            <ion-card-title>Taller</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-input label="Nombre del taller" labelPlacement="stacked" [(ngModel)]="settings.workshopName" name="name"></ion-input>
+            <ion-input label="Logo (URL)" labelPlacement="stacked" [(ngModel)]="settings.logo" name="logo"></ion-input>
+            <ion-input label="Descuento frecuente (%)" type="number" labelPlacement="stacked" [(ngModel)]="settings.defaultDiscount" name="discount"></ion-input>
+            <ion-input label="IVA (%)" type="number" labelPlacement="stacked" [(ngModel)]="settings.taxRate" name="tax"></ion-input>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col sizeLg="6" size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Pagos</ion-card-subtitle>
+            <ion-card-title>Opciones aceptadas</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-chip *ngFor="let opt of settings.paymentOptions" color="tertiary">{{ opt }}</ion-chip>
+            <div class="form-inline">
+              <ion-input label="Nueva opción" labelPlacement="floating" [(ngModel)]="newPayment" name="payment"></ion-input>
+              <ion-button size="small" (click)="addPayment()">Agregar</ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Servicios frecuentes</ion-card-subtitle>
+            <ion-card-title>Plantillas</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-textarea auto-grow="true" placeholder="Ej: Servicio rápido, afinación mayor, reemplazo de frenos..."></ion-textarea>
+            <ion-note color="medium">Usa estas notas para precargar conceptos en presupuestos.</ion-note>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  </div>
+</ion-content>

@@ -1,0 +1,133 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Órdenes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="page-shell">
+    <div class="header">
+      <div>
+        <p class="eyebrow">Órdenes de servicio</p>
+        <h1>Seguimiento operativo</h1>
+        <p class="muted">Creación desde presupuestos aprobados, asignación de mecánicos y registro de actividades.</p>
+      </div>
+      <ion-segment [(ngModel)]="filter" value="todas" mode="md">
+        <ion-segment-button value="todas">Todas</ion-segment-button>
+        <ion-segment-button value="pendiente">Pendientes</ion-segment-button>
+        <ion-segment-button value="en-proceso">En proceso</ion-segment-button>
+        <ion-segment-button value="completada">Completadas</ion-segment-button>
+      </ion-segment>
+    </div>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col sizeLg="7" size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Órdenes</ion-card-subtitle>
+            <ion-card-title>Servicios activos</ion-card-title>
+          </ion-card-header>
+          <ion-list lines="inset">
+            <ion-item *ngFor="let order of filteredOrders()">
+              <ion-icon name="construct-outline" slot="start"></ion-icon>
+              <ion-label>
+                <h2>{{ order.id }} · Cliente {{ order.clientId }}</h2>
+                <p>Vehículo {{ order.vehicleId }} · Mecánico {{ order.mechanicId }}</p>
+                <p>Estatus: {{ order.status }} · Inicio: {{ order.startedAt | date: 'short' }}</p>
+              </ion-label>
+              <ion-chip [color]="order.status === 'completada' ? 'success' : order.status === 'en-proceso' ? 'warning' : 'medium'">
+                {{ order.status }}
+              </ion-chip>
+            </ion-item>
+          </ion-list>
+        </ion-card>
+
+        <ion-card *ngFor="let order of filteredOrders()">
+          <ion-card-header>
+            <ion-card-subtitle>{{ order.id }}</ion-card-subtitle>
+            <ion-card-title>Actividades y tiempos</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-list lines="none">
+              <ion-item *ngFor="let act of order.activities">
+                <ion-icon name="timer-outline" slot="start"></ion-icon>
+                <ion-label>
+                  <h2>{{ act.description }}</h2>
+                  <p>{{ act.timestamp | date: 'short' }} · {{ act.durationHours }} h · {{ act.mechanicId }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+
+            <div class="form-inline">
+              <ion-input
+                placeholder="Descripción"
+                [(ngModel)]="activityDrafts[order.id].description"
+                name="desc-{{ order.id }}"
+              ></ion-input>
+              <ion-input
+                type="number"
+                placeholder="Horas"
+                [(ngModel)]="activityDrafts[order.id].durationHours"
+                name="hours-{{ order.id }}"
+              ></ion-input>
+              <ion-select [(ngModel)]="activityDrafts[order.id].mechanicId" interface="popover" placeholder="Mecánico">
+                <ion-select-option *ngFor="let mech of mechanics" [value]="mech.id">{{ mech.name }}</ion-select-option>
+              </ion-select>
+            </div>
+            <ion-button size="small" color="secondary" (click)="logActivity(order)">
+              <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+              Registrar actividad
+            </ion-button>
+
+            <div class="comments">
+              <ion-textarea
+                auto-grow="true"
+                placeholder="Comentarios sobre estado del vehículo"
+                [(ngModel)]="commentDrafts[order.id]"
+                name="comment-{{ order.id }}"
+              ></ion-textarea>
+              <ion-button size="small" fill="clear" (click)="addComment(order)">
+                <ion-icon slot="start" name="chatbox-ellipses-outline"></ion-icon>
+                Añadir comentario
+              </ion-button>
+            </div>
+
+            <div class="actions">
+              <ion-button color="warning" fill="outline" size="small" (click)="updateStatus(order, 'en-proceso')">En proceso</ion-button>
+              <ion-button color="success" size="small" (click)="updateStatus(order, 'completada')">Completar</ion-button>
+            </div>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col sizeLg="5" size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Nueva orden</ion-card-subtitle>
+            <ion-card-title>Desde presupuesto aprobado</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-select placeholder="Presupuesto aprobado" interface="popover" [(ngModel)]="newOrder.budgetId">
+              <ion-select-option *ngFor="let budget of approvedBudgets()" [value]="budget.id">
+                {{ budget.id }} · Cliente {{ budget.clientId }} · {{ budget.vehicleId }}
+              </ion-select-option>
+            </ion-select>
+            <ion-select placeholder="Asignar mecánico" interface="popover" [(ngModel)]="newOrder.mechanicId">
+              <ion-select-option *ngFor="let mech of mechanics" [value]="mech.id">{{ mech.name }}</ion-select-option>
+            </ion-select>
+            <ion-button expand="block" color="primary" (click)="createFromBudget()">
+              <ion-icon slot="start" name="flash-outline"></ion-icon>
+              Generar orden
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  </div>
+</ion-content>

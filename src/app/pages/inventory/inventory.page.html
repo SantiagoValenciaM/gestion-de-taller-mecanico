@@ -1,0 +1,159 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Inventario</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="page-shell">
+    <div class="header">
+      <div>
+        <p class="eyebrow">Inventario de productos</p>
+        <h1>Control de refacciones y consumibles</h1>
+        <p class="muted">Registro de entradas y salidas con alertas de bajo stock.</p>
+      </div>
+      <ion-badge color="danger">Alertas: {{ lowStock.length }}</ion-badge>
+    </div>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col sizeLg="7" size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Inventario</ion-card-subtitle>
+            <ion-card-title>Productos</ion-card-title>
+          </ion-card-header>
+          <ion-list lines="full">
+            <ion-item *ngFor="let product of products">
+              <ion-icon name="cube-outline" slot="start"></ion-icon>
+              <ion-label>
+                <h2>{{ product.name }} ({{ product.sku }})</h2>
+                <p>Precio ${{ product.price }} · Último movimiento {{ product.lastMovement | date: 'shortDate' }}</p>
+              </ion-label>
+              <ion-badge [color]="product.stock <= product.minStock ? 'danger' : 'success'">
+                Stock {{ product.stock }}
+              </ion-badge>
+            </ion-item>
+          </ion-list>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Movimientos recientes</ion-card-subtitle>
+            <ion-card-title>Entradas / salidas</ion-card-title>
+          </ion-card-header>
+          <ion-list lines="inset">
+            <ion-item *ngFor="let move of movements">
+              <ion-icon
+                [name]="move.type === 'entrada' ? 'arrow-down-circle-outline' : 'arrow-up-circle-outline'"
+                slot="start"
+                [color]="move.type === 'entrada' ? 'success' : 'warning'"
+              ></ion-icon>
+              <ion-label>
+                <h2>{{ move.note }}</h2>
+                <p>{{ move.date | date: 'shortDate' }} · Cantidad {{ move.quantity }}</p>
+              </ion-label>
+              <ion-badge color="medium">{{ move.productId }}</ion-badge>
+            </ion-item>
+          </ion-list>
+        </ion-card>
+      </ion-col>
+
+      <ion-col sizeLg="5" size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Alta de producto</ion-card-subtitle>
+            <ion-card-title>Nuevo SKU</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-input label="Nombre" labelPlacement="stacked" [(ngModel)]="newProduct.name" name="p-name"></ion-input>
+            <ion-input label="SKU" labelPlacement="stacked" [(ngModel)]="newProduct.sku" name="p-sku"></ion-input>
+            <ion-input label="Precio" type="number" labelPlacement="stacked" [(ngModel)]="newProduct.price" name="p-price"></ion-input>
+            <div class="form-inline">
+              <ion-input
+                label="Stock"
+                type="number"
+                labelPlacement="stacked"
+                [(ngModel)]="newProduct.stock"
+                name="p-stock"
+              ></ion-input>
+              <ion-input
+                label="Stock mínimo"
+                type="number"
+                labelPlacement="stacked"
+                [(ngModel)]="newProduct.minStock"
+                name="p-min"
+              ></ion-input>
+            </div>
+            <ion-button expand="block" color="primary" (click)="addProduct()">
+              <ion-icon slot="start" name="save-outline"></ion-icon>
+              Guardar producto
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Movimientos</ion-card-subtitle>
+            <ion-card-title>Entrada / salida</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-select placeholder="Producto" interface="popover" [(ngModel)]="movement.productId">
+              <ion-select-option *ngFor="let product of products" [value]="product.id">
+                {{ product.name }} ({{ product.stock }} en stock)
+              </ion-select-option>
+            </ion-select>
+            <ion-segment [(ngModel)]="movement.type">
+              <ion-segment-button value="entrada">Entrada</ion-segment-button>
+              <ion-segment-button value="salida">Salida</ion-segment-button>
+              <ion-segment-button value="ajuste">Ajuste</ion-segment-button>
+            </ion-segment>
+            <div class="form-inline">
+              <ion-input
+                type="number"
+                label="Cantidad"
+                labelPlacement="floating"
+                [(ngModel)]="movement.quantity"
+                name="m-qty"
+              ></ion-input>
+              <ion-input label="Fecha" type="date" labelPlacement="floating" [(ngModel)]="movement.date" name="m-date"></ion-input>
+            </div>
+            <ion-input label="Nota" labelPlacement="stacked" [(ngModel)]="movement.note" name="m-note"></ion-input>
+            <ion-button expand="block" color="secondary" class="ion-margin-top" (click)="recordMovement()">
+              <ion-icon slot="start" name="swap-vertical-outline"></ion-icon>
+              Registrar movimiento
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Alertas</ion-card-subtitle>
+            <ion-card-title>Bajo inventario</ion-card-title>
+          </ion-card-header>
+          <ion-list lines="none" *ngIf="lowStock.length; else noAlerts">
+            <ion-item *ngFor="let product of lowStock">
+              <ion-icon name="alert-circle-outline" slot="start" color="danger"></ion-icon>
+              <ion-label>
+                <h2>{{ product.name }}</h2>
+                <p>Stock {{ product.stock }} / mínimo {{ product.minStock }}</p>
+              </ion-label>
+              <ion-badge color="danger">Reponer</ion-badge>
+            </ion-item>
+          </ion-list>
+          <ng-template #noAlerts>
+            <ion-item lines="none">
+              <ion-icon name="checkmark-done-outline" slot="start" color="success"></ion-icon>
+              <ion-label>Sin alertas activas.</ion-label>
+            </ion-item>
+          </ng-template>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  </div>
+</ion-content>

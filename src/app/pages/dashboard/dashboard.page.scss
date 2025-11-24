@@ -1,0 +1,27 @@
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 700;
+  color: var(--ion-color-medium);
+  margin: 0;
+}
+
+.muted {
+  color: var(--ion-color-medium);
+}
+
+ion-card {
+  height: 100%;
+}
+
+ion-card-title {
+  font-weight: 800;
+}

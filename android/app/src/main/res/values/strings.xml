@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Taller Mecanico</string>
+    <string name="title_activity_main">Taller Mecanico</string>
+    <string name="package_name">com.taller.mecanico</string>
+    <string name="custom_url_scheme">com.taller.mecanico</string>
+</resources>

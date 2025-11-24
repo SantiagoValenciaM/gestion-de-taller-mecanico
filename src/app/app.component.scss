@@ -1,0 +1,48 @@
+ion-menu {
+  --width: 320px;
+}
+
+.user-card {
+  --inner-padding-end: 12px;
+  --inner-padding-start: 12px;
+  background: linear-gradient(135deg, rgba(var(--ion-color-primary-rgb), 0.12), rgba(var(--ion-color-tertiary-rgb), 0.12));
+}
+
+.user-card h2 {
+  margin: 0;
+  font-weight: 700;
+}
+
+.user-card p {
+  margin: 4px 0 0;
+  color: var(--ion-color-medium);
+}
+
+.menu-status {
+  padding: 4px 16px 12px;
+}
+
+.menu-status h3 {
+  margin: 0;
+  font-weight: 700;
+}
+
+.menu-status .label {
+  color: var(--ion-color-medium);
+  margin: 0;
+}
+
+ion-item.selected {
+  --background: rgba(var(--ion-color-primary-rgb), 0.14);
+  --color: var(--ion-color-primary);
+  border-left: 4px solid var(--ion-color-primary);
+}
+
+ion-menu ion-list-header {
+  font-weight: 700;
+  letter-spacing: 0.2px;
+}
+
+ion-footer {
+  border-top: 1px solid var(--ion-color-light-shade);
+}

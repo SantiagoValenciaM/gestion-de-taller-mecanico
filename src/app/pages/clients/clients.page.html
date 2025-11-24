@@ -1,0 +1,147 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Clientes</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="page-shell">
+    <div class="header">
+      <div>
+        <p class="eyebrow">Clientes</p>
+        <h1>Perfiles de clientes y flotas</h1>
+        <p class="muted">Registra información, asigna múltiples vehículos y revisa historial de servicios.</p>
+      </div>
+      <ion-badge color="primary">Total: {{ clients.length }}</ion-badge>
+    </div>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col sizeLg="5" size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Listado</ion-card-subtitle>
+            <ion-card-title>Clientes</ion-card-title>
+          </ion-card-header>
+          <ion-list lines="full">
+            <ion-item
+              *ngFor="let client of clients"
+              button
+              detail="false"
+              (click)="select(client)"
+              [class.selected]="client.id === selected?.id"
+            >
+              <ion-icon name="person-outline" slot="start"></ion-icon>
+              <ion-label>
+                <h2>{{ client.name }}</h2>
+                <p>{{ client.email }} · {{ client.phone }}</p>
+                <ion-chip *ngFor="let vehicle of client.vehicles" color="tertiary" size="small">
+                  <ion-icon name="car-sport-outline"></ion-icon>
+                  <ion-label>{{ vehicle.plates }} · {{ vehicle.brand }} {{ vehicle.model }}</ion-label>
+                </ion-chip>
+              </ion-label>
+              <ion-badge color="medium">{{ client.vehicles.length }} vehículos</ion-badge>
+            </ion-item>
+          </ion-list>
+        </ion-card>
+      </ion-col>
+
+      <ion-col sizeLg="7" size="12">
+        <ion-card *ngIf="selected">
+          <ion-card-header>
+            <ion-card-subtitle>Detalle del cliente</ion-card-subtitle>
+            <ion-card-title>{{ selected?.name }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-item lines="none">
+              <ion-icon name="call-outline" slot="start"></ion-icon>
+              <ion-label>{{ selected?.phone }}</ion-label>
+            </ion-item>
+            <ion-item lines="none">
+              <ion-icon name="mail-outline" slot="start"></ion-icon>
+              <ion-label>{{ selected?.email }}</ion-label>
+            </ion-item>
+
+            <h3 class="section-title">Vehículos</h3>
+            <ion-list lines="inset">
+              <ion-item *ngFor="let vehicle of selected?.vehicles">
+                <ion-icon name="car-outline" slot="start"></ion-icon>
+                <ion-label>
+                  <h2>{{ vehicle.brand }} {{ vehicle.model }} · {{ vehicle.year }}</h2>
+                  <p>Placas: {{ vehicle.plates }} · Km: {{ vehicle.mileage || 0 }}</p>
+                  <p *ngIf="vehicle.notes">{{ vehicle.notes }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+
+            <div class="form-inline">
+              <ion-input label="Marca" labelPlacement="floating" [(ngModel)]="newVehicle.brand" name="brand"></ion-input>
+              <ion-input label="Modelo" labelPlacement="floating" [(ngModel)]="newVehicle.model" name="model"></ion-input>
+            </div>
+            <div class="form-inline">
+              <ion-input label="Placas" labelPlacement="floating" [(ngModel)]="newVehicle.plates" name="plates"></ion-input>
+              <ion-input
+                label="Año"
+                type="number"
+                labelPlacement="floating"
+                [(ngModel)]="newVehicle.year"
+                name="year"
+              ></ion-input>
+            </div>
+            <ion-button expand="block" color="secondary" (click)="addVehicle()">Añadir vehículo</ion-button>
+
+            <h3 class="section-title">Historial</h3>
+            <ion-list lines="inset" *ngIf="history().length; else noHistory">
+              <ion-item *ngFor="let record of history()">
+                <ion-icon name="time-outline" slot="start"></ion-icon>
+                <ion-label>
+                  <h2>{{ record.description }}</h2>
+                  <p>{{ record.date }} · ${{ record.amount | number: '1.0-0' }}</p>
+                </ion-label>
+              </ion-item>
+            </ion-list>
+            <ng-template #noHistory>
+              <ion-note color="medium">Sin servicios previos.</ion-note>
+            </ng-template>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Nuevo cliente</ion-card-subtitle>
+            <ion-card-title>Registrar y asignar vehículo</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <div class="form-grid">
+              <ion-input label="Nombre" labelPlacement="stacked" [(ngModel)]="newClient.name" name="name"></ion-input>
+              <ion-input label="Correo" labelPlacement="stacked" [(ngModel)]="newClient.email" name="email"></ion-input>
+              <ion-input label="Teléfono" labelPlacement="stacked" [(ngModel)]="newClient.phone" name="phone"></ion-input>
+              <ion-input label="Contacto" labelPlacement="stacked" [(ngModel)]="newClient.contact" name="contact"></ion-input>
+            </div>
+            <div class="form-grid">
+              <ion-input label="Marca" labelPlacement="stacked" [(ngModel)]="newVehicle.brand" name="n-brand"></ion-input>
+              <ion-input label="Modelo" labelPlacement="stacked" [(ngModel)]="newVehicle.model" name="n-model"></ion-input>
+              <ion-input label="Placas" labelPlacement="stacked" [(ngModel)]="newVehicle.plates" name="n-plates"></ion-input>
+              <ion-input
+                label="Año"
+                type="number"
+                labelPlacement="stacked"
+                [(ngModel)]="newVehicle.year"
+                name="n-year"
+              ></ion-input>
+            </div>
+            <ion-button expand="block" color="primary" (click)="addClient()">
+              <ion-icon slot="start" name="person-add-outline"></ion-icon>
+              Guardar cliente y vehículo
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  </div>
+</ion-content>

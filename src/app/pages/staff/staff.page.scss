@@ -1,0 +1,25 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ion-color-medium);
+  margin: 0;
+}
+
+.muted {
+  color: var(--ion-color-medium);
+}
+
+.section-title {
+  margin: 12px 0 6px;
+  font-weight: 700;
+}
+
+ion-item.selected {
+  --background: rgba(var(--ion-color-primary-rgb), 0.08);
+}

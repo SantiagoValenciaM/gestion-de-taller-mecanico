@@ -1,0 +1,122 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Personal</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="page-shell">
+    <div class="header">
+      <div>
+        <p class="eyebrow">Control de personal</p>
+        <h1>Asignación y productividad</h1>
+        <p class="muted">Registra mecánicos, horarios, asistencia y servicios asignados.</p>
+      </div>
+      <ion-badge color="primary">Equipo: {{ staff.length }}</ion-badge>
+    </div>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col sizeLg="7" size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Personal</ion-card-subtitle>
+            <ion-card-title>Equipo activo</ion-card-title>
+          </ion-card-header>
+          <ion-list lines="full">
+            <ion-item *ngFor="let member of staff" button detail="false" (click)="select(member)" [class.selected]="member.id === selected?.id">
+              <ion-avatar slot="start">
+                <img src="https://ionicframework.com/docs/img/demos/avatar.svg" />
+              </ion-avatar>
+              <ion-label>
+                <h2>{{ member.name }} · {{ member.role }}</h2>
+                <p>Especialidad: {{ member.specialty }} · Horario: {{ member.schedule }}</p>
+                <p>Servicios activos: {{ member.assignedServices.length }} · Completados: {{ member.productivity.completed }}</p>
+              </ion-label>
+              <ion-badge color="success">{{ member.productivity.completed }} completados</ion-badge>
+            </ion-item>
+          </ion-list>
+        </ion-card>
+
+        <ion-card *ngIf="selected">
+          <ion-card-header>
+            <ion-card-subtitle>{{ selected?.role }}</ion-card-subtitle>
+            <ion-card-title>{{ selected?.name }}</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <p>Horario: {{ selected?.schedule }} · Especialidad: {{ selected?.specialty }}</p>
+            <ion-chip color="success">Activos: {{ selected?.productivity?.active ?? 0 }}</ion-chip>
+            <ion-chip color="tertiary">Horas: {{ selected?.productivity?.hours ?? 0 }}</ion-chip>
+
+            <h3 class="section-title">Servicios asignados</h3>
+            <ion-chip *ngFor="let os of selected?.assignedServices" color="medium">{{ os }}</ion-chip>
+
+            <h3 class="section-title">Asistencia</h3>
+            <ion-list lines="none">
+              <ion-item *ngFor="let att of selected?.attendance">
+                <ion-icon
+                  slot="start"
+                  [name]="att.status === 'presente' ? 'checkmark-circle-outline' : att.status === 'tarde' ? 'alert-circle-outline' : 'close-circle-outline'"
+                  [color]="att.status === 'presente' ? 'success' : att.status === 'tarde' ? 'warning' : 'danger'"
+                ></ion-icon>
+                <ion-label>{{ att.date }} · {{ att.status }}</ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+
+      <ion-col sizeLg="5" size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Nuevo colaborador</ion-card-subtitle>
+            <ion-card-title>Registro rápido</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-input label="Nombre" labelPlacement="stacked" [(ngModel)]="newStaff.name" name="s-name"></ion-input>
+            <ion-select label="Rol" labelPlacement="stacked" interface="popover" [(ngModel)]="newStaff.role" name="s-role">
+              <ion-select-option value="Administrador">Administrador</ion-select-option>
+              <ion-select-option value="Mecánico">Mecánico</ion-select-option>
+              <ion-select-option value="Cajero">Cajero</ion-select-option>
+              <ion-select-option value="Recepción">Recepción</ion-select-option>
+            </ion-select>
+            <ion-input label="Especialidad" labelPlacement="stacked" [(ngModel)]="newStaff.specialty" name="s-specialty"></ion-input>
+            <ion-input label="Horario" labelPlacement="stacked" [(ngModel)]="newStaff.schedule" name="s-schedule"></ion-input>
+            <ion-button expand="block" color="primary" (click)="addStaff()">
+              <ion-icon slot="start" name="person-add-outline"></ion-icon>
+              Guardar colaborador
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Asignación</ion-card-subtitle>
+            <ion-card-title>Servicios</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-select placeholder="Mecánico" interface="popover" [(ngModel)]="assignment.mechanicId">
+              <ion-select-option *ngFor="let member of mechanicsOnly()" [value]="member.id">
+                {{ member.name }}
+              </ion-select-option>
+            </ion-select>
+            <ion-select placeholder="Orden" interface="popover" [(ngModel)]="assignment.orderId">
+              <ion-select-option *ngFor="let order of orders" [value]="order.id">
+                {{ order.id }} · {{ order.status }}
+              </ion-select-option>
+            </ion-select>
+            <ion-button expand="block" color="secondary" (click)="assign()">
+              <ion-icon slot="start" name="checkbox-outline"></ion-icon>
+              Asignar servicio
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  </div>
+</ion-content>

@@ -1,0 +1,35 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.eyebrow {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--ion-color-medium);
+  margin: 0;
+}
+
+.muted {
+  color: var(--ion-color-medium);
+}
+
+.lines {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.line {
+  background: rgba(var(--ion-color-light-rgb), 0.6);
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.form-inline {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 8px;
+}

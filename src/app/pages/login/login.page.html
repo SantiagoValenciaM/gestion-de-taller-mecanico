@@ -1,0 +1,68 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Ingresar</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="page-shell">
+    <div class="hero">
+      <div>
+        <p class="badge">Control de taller mecánico</p>
+        <h1>Opera tu taller en una sola pantalla.</h1>
+        <p class="lead">
+          Presupuestos, órdenes de servicio, inventario y cobros con asignación clara de roles: Administrador, Mecánico y
+          Cajero.
+        </p>
+        <ion-chip color="primary" outline>Roles listos: admin / mecánico / cajero</ion-chip>
+      </div>
+    </div>
+
+    <ion-card class="login-card">
+      <ion-card-header>
+        <ion-card-title>Ingreso seguro</ion-card-title>
+        <ion-card-subtitle>Autenticación por correo y contraseña con opción de biometría simulada.</ion-card-subtitle>
+      </ion-card-header>
+      <ion-card-content>
+        <form (ngSubmit)="login()">
+          <ion-item fill="outline">
+            <ion-label position="floating">Correo electrónico</ion-label>
+            <ion-input type="email" name="email" required [(ngModel)]="email"></ion-input>
+          </ion-item>
+          <ion-item fill="outline">
+            <ion-label position="floating">Contraseña</ion-label>
+            <ion-input type="password" name="password" required [(ngModel)]="password"></ion-input>
+          </ion-item>
+
+          <div class="toggles">
+            <ion-toggle [(ngModel)]="remember" name="remember" justify="space-between">Recordar sesión</ion-toggle>
+            <ion-toggle
+              [(ngModel)]="useBiometric"
+              name="biometric"
+              [disabled]="!biometricReady && !remember"
+              justify="space-between"
+            >
+              Autenticación biométrica (simulada)
+            </ion-toggle>
+          </div>
+
+          <ion-note color="medium">
+            Activa "Recordar sesión" para habilitar biometría en el siguiente acceso. La biometría es un flujo simulado para demo.
+          </ion-note>
+
+          <ion-button expand="block" color="primary" type="submit" class="ion-margin-top">
+            <ion-icon name="log-in-outline" slot="start"></ion-icon>
+            Entrar
+          </ion-button>
+          <ion-chip *ngIf="message" color="danger" class="ion-margin-top">
+            <ion-icon name="alert-circle-outline" color="danger"></ion-icon>
+            <ion-label>{{ message }}</ion-label>
+          </ion-chip>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

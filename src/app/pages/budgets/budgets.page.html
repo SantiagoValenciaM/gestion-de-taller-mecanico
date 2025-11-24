@@ -1,0 +1,141 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/dashboard"></ion-back-button>
+      <ion-menu-button autoHide="false"></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Presupuestos</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <div class="page-shell">
+    <div class="header">
+      <div>
+        <p class="eyebrow">Presupuestos</p>
+        <h1>Costeo de servicios y refacciones</h1>
+        <p class="muted">Desglose de mano de obra y materiales con seguimiento de estatus.</p>
+      </div>
+      <ion-segment [(ngModel)]="filter" value="todos" mode="md">
+        <ion-segment-button value="todos">Todos</ion-segment-button>
+        <ion-segment-button value="pendiente">Pendientes</ion-segment-button>
+        <ion-segment-button value="aprobado">Aprobados</ion-segment-button>
+        <ion-segment-button value="rechazado">Rechazados</ion-segment-button>
+      </ion-segment>
+    </div>
+
+  <ion-grid>
+    <ion-row>
+      <ion-col sizeLg="7" size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Lista de presupuestos</ion-card-subtitle>
+            <ion-card-title>Pipeline</ion-card-title>
+          </ion-card-header>
+          <ion-list lines="full">
+            <ion-item *ngFor="let budget of filteredBudgets()">
+              <ion-icon name="pricetag-outline" slot="start"></ion-icon>
+              <ion-label>
+                <h2>{{ budget.id }} · Cliente {{ budget.clientId }}</h2>
+                <p>{{ budget.createdAt | date: 'mediumDate' }} · Vehículo {{ budget.vehicleId }}</p>
+                <p>Conceptos: {{ budget.lines.length }} · Total: ${{ budgetTotal(budget) | number: '1.0-0' }}</p>
+              </ion-label>
+              <ion-chip [color]="budget.status === 'aprobado' ? 'success' : budget.status === 'pendiente' ? 'warning' : 'medium'">
+                {{ budget.status }}
+              </ion-chip>
+              <ion-button size="small" color="success" (click)="updateStatus(budget, 'aprobado')">Aprobar</ion-button>
+              <ion-button size="small" fill="clear" color="medium" (click)="updateStatus(budget, 'rechazado')">
+                Rechazar
+              </ion-button>
+            </ion-item>
+          </ion-list>
+        </ion-card>
+      </ion-col>
+
+      <ion-col sizeLg="5" size="12">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-subtitle>Nuevo presupuesto</ion-card-subtitle>
+            <ion-card-title>Generar</ion-card-title>
+          </ion-card-header>
+          <ion-card-content>
+            <ion-select placeholder="Cliente" interface="popover" [(ngModel)]="newBudget.clientId" (ionChange)="selectClient()">
+              <ion-select-option *ngFor="let client of clients" [value]="client.id">{{ client.name }}</ion-select-option>
+            </ion-select>
+            <ion-select placeholder="Vehículo" interface="popover" [(ngModel)]="newBudget.vehicleId">
+              <ion-select-option *ngFor="let vehicle of vehicles" [value]="vehicle.id">
+                {{ vehicle.plates }} · {{ vehicle.brand }} {{ vehicle.model }}
+              </ion-select-option>
+            </ion-select>
+            <ion-input
+              label="Descuento (%)"
+              type="number"
+              labelPlacement="stacked"
+              [(ngModel)]="newBudget.discount"
+              name="discount"
+            ></ion-input>
+
+            <div class="lines">
+              <div *ngFor="let line of newBudget.lines; let i = index" class="line">
+                <ion-item fill="outline">
+                  <ion-label position="floating">Concepto {{ i + 1 }}</ion-label>
+                  <ion-input [(ngModel)]="line.concept" name="concept-{{ i }}"></ion-input>
+                </ion-item>
+                <div class="form-inline">
+                  <ion-input
+                    label="Horas"
+                    type="number"
+                    labelPlacement="floating"
+                    [(ngModel)]="line.laborHours"
+                    name="hours-{{ i }}"
+                  ></ion-input>
+                  <ion-input
+                    label="Tarifa"
+                    type="number"
+                    labelPlacement="floating"
+                    [(ngModel)]="line.laborRate"
+                    name="rate-{{ i }}"
+                  ></ion-input>
+                </div>
+                <h4>Piezas / materiales</h4>
+                <ion-list lines="none">
+                  <ion-item *ngFor="let part of line.parts; let p = index">
+                    <ion-input [(ngModel)]="part.name" name="part-name-{{ i }}-{{ p }}" label="Producto" labelPlacement="stacked"></ion-input>
+                    <ion-input
+                      [(ngModel)]="part.quantity"
+                      name="part-qty-{{ i }}-{{ p }}"
+                      label="Cantidad"
+                      type="number"
+                      labelPlacement="stacked"
+                    ></ion-input>
+                    <ion-input
+                      [(ngModel)]="part.price"
+                      name="part-price-{{ i }}-{{ p }}"
+                      label="Precio"
+                      type="number"
+                      labelPlacement="stacked"
+                    ></ion-input>
+                  </ion-item>
+                </ion-list>
+                <ion-button size="small" fill="clear" (click)="addPart(line)">
+                  <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+                  Agregar material
+                </ion-button>
+              </div>
+            </div>
+
+            <ion-button expand="block" color="secondary" (click)="addLine()">
+              <ion-icon slot="start" name="add-circle-outline"></ion-icon>
+              Añadir servicio
+            </ion-button>
+            <ion-button expand="block" color="primary" (click)="save()" class="ion-margin-top">
+              <ion-icon slot="start" name="save-outline"></ion-icon>
+              Guardar presupuesto
+            </ion-button>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </ion-grid>
+  </div>
+</ion-content>
